@@ -1,3 +1,27 @@
 backend/token.json
 backend/credentials.json
 .env
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Databases & local state
+support.db
+
+# Node / frontend build output
+node_modules/
+support-frontend/node_modules/
+support-frontend/dist/
+
+# Vite build (served by FastAPI)
+backend/static/assets/
+
+# Editor junk
+.DS_Store
