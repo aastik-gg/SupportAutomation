@@ -17,3 +17,23 @@ class TicketSchema(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         from_attributes = True
+
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+
+class UpdateReplyPayload(BaseModel):
+    reply: str | None = None
+
+
+class SendReplyPayload(BaseModel):
+    confirm: bool = False
+
+
+class CreateTicketPayload(BaseModel):
+    name: str | None = None
+    email: str
+    subject: str | None = None
+    message: str | None = None

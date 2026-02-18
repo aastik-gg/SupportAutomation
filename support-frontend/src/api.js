@@ -1,13 +1,25 @@
 import axios from "axios"
 
-const HOST =
-	typeof window !== "undefined" && window.location?.hostname
-		? window.location.hostname
-		: "127.0.0.1"
-const API =
-	typeof window !== "undefined" && window.location.hostname === "localhost"
-		? `http://${HOST}:8000`
-		: "https://supportautomation.onrender.com"
+const isBrowser = typeof window !== "undefined"
+const envBase = (import.meta.env.VITE_API_BASE_URL || "").trim()
+const defaultDevHost = "127.0.0.1"
+const defaultDevPort = 8000
+
+const inferBaseFromWindow = () => {
+	if (!isBrowser) {
+		return `http://${defaultDevHost}:${defaultDevPort}`
+	}
+	const { protocol, hostname, port } = window.location
+	const currentOrigin = `${protocol}//${hostname}${port ? `:${port}` : ""}`
+	const isViteDevPort = port === "5173"
+	if (isViteDevPort) {
+		return `${protocol}//${hostname}:${defaultDevPort}`
+	}
+	return currentOrigin
+}
+
+const API = envBase || inferBaseFromWindow()
+
 export const UNAUTHORIZED_EVENT = "support-unauthorized"
 
 const client = axios.create({

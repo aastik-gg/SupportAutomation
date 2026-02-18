@@ -1,9 +1,10 @@
 fastapi
 uvicorn[standard]
 python-dotenv
-google-generativeai
+google-genai
 google-api-python-client
 google-auth
 beautifulsoup4
 sqlalchemy
 psycopg2-binary
+httpx
