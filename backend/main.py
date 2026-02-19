@@ -17,6 +17,7 @@ from backend.services.auth import (
     SESSION_COOKIE_NAME,
     decode_session_token,
 )
+from backend.database import Base, engine
 
 load_dotenv()
 
@@ -42,6 +43,12 @@ ENV_FRONTEND_ORIGINS = {
 
 FRONTEND_ORIGINS = sorted(DEFAULT_FRONTEND_ORIGINS | ENV_FRONTEND_ORIGINS)
 
+MIGRATE_ON_START = (os.getenv("RUN_DB_MIGRATIONS") or "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+}
+
 print("DATABASE_URL:", os.getenv("DATABASE_URL"))
 
 app = FastAPI()
@@ -55,6 +62,17 @@ app.add_middleware(
 
 STATIC_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+if MIGRATE_ON_START:
+
+    @app.on_event("startup")
+    async def _auto_create_tables():
+        if engine is None:
+            logger.warning("RUN_DB_MIGRATIONS set but DATABASE_URL is missing")
+            return
+        logger.info("RUN_DB_MIGRATIONS=1 -> ensuring database tables exist")
+        Base.metadata.create_all(bind=engine)
 
 def _maybe_attach_cors_headers(response, request: Request):
     origin = request.headers.get("origin")
