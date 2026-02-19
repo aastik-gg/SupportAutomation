@@ -1,12 +1,12 @@
 import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react"
 
-// https://vite.dev/config/
-export default defineConfig(({ command }) => ({
+// Default Vite config for standalone frontend deployments
+export default defineConfig({
   plugins: [react()],
-  base: command === "serve" ? "/" : "/static/",
+  base: "/",
   build: {
-    outDir: "../backend/static",
+    outDir: "dist",
     emptyOutDir: true,
   },
-}))
+})

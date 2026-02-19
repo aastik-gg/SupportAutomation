@@ -3,7 +3,7 @@ import axios from "axios"
 const isBrowser = typeof window !== "undefined"
 const envBase = (import.meta.env.VITE_API_BASE_URL || "").trim()
 const defaultDevHost = "127.0.0.1"
-const defaultDevPort = 8000
+const defaultDevPort = 8002
 
 const inferBaseFromWindow = () => {
 	if (!isBrowser) {
