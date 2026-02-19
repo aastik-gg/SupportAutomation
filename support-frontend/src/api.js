@@ -4,6 +4,10 @@ const isBrowser = typeof window !== "undefined"
 const envBase = (import.meta.env.VITE_API_BASE_URL || "").trim()
 const defaultDevHost = "127.0.0.1"
 const defaultDevPort = 8002
+const hostedAPI = "https://supportautomation-zd3v.onrender.com"
+
+const isLocalHostname = (hostname) =>
+	["localhost", "127.0.0.1", "::1"].includes(hostname || "")
 
 const inferBaseFromWindow = () => {
 	if (!isBrowser) {
@@ -18,7 +22,16 @@ const inferBaseFromWindow = () => {
 	return currentOrigin
 }
 
-const API = envBase || inferBaseFromWindow()
+const resolveBaseUrl = () => {
+	if (envBase) return envBase
+	if (!isBrowser) {
+		return `http://${defaultDevHost}:${defaultDevPort}`
+	}
+	const { hostname } = window.location
+	return isLocalHostname(hostname) ? inferBaseFromWindow() : hostedAPI
+}
+
+const API = resolveBaseUrl()
 
 export const UNAUTHORIZED_EVENT = "support-unauthorized"
 
