@@ -30,7 +30,7 @@ STATIC_DIR = BASE_DIR / "static"
 DEFAULT_FRONTEND_ORIGINS = {
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://support-automation-8s7jfpxs3-aastik-ggs-projects.vercel.app",
+    "https://support-automation-phi.vercel.app",
     "https://supportautomation-zd3v.onrender.com",
 }
 
