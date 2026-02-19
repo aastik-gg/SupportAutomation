@@ -7,6 +7,7 @@ from email import message_from_bytes
 from email.header import decode_header
 from pathlib import Path
 from typing import List
+import os
 
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -26,19 +27,38 @@ logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parents[1]
 CREDENTIALS_PATH = BASE_DIR / "credentials.json"
 TOKEN_PATH = BASE_DIR / "token.json"
+ENV_CREDENTIALS = os.getenv("GMAIL_CREDENTIALS_JSON")
+ENV_TOKEN = os.getenv("GMAIL_TOKEN_JSON")
+
+
+def _ensure_secret_file(path: Path, contents: str | None):
+    if path.exists() or not contents:
+        return path if path.exists() else None
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(contents)
+    return path
 
 
 def gmail_service():
-    if not TOKEN_PATH.exists():
+    token_path = TOKEN_PATH
+    creds_path = CREDENTIALS_PATH
+
+    if ENV_TOKEN:
+        token_path = _ensure_secret_file(TOKEN_PATH, ENV_TOKEN)
+    if ENV_CREDENTIALS:
+        creds_path = _ensure_secret_file(CREDENTIALS_PATH, ENV_CREDENTIALS)
+
+    if token_path is None or not Path(token_path).exists():
         raise RuntimeError(
             "Gmail token file is missing. Provide GMAIL_TOKEN_JSON in the environment."
         )
-    if not CREDENTIALS_PATH.exists():
+    if creds_path is None or not Path(creds_path).exists():
         raise RuntimeError(
             "Gmail credentials file is missing. Provide GMAIL_CREDENTIALS_JSON in the environment."
         )
+
     try:
-        creds = Credentials.from_authorized_user_file(str(TOKEN_PATH))
+        creds = Credentials.from_authorized_user_file(str(token_path))
     except Exception as exc:  # pragma: no cover - defensive logging
         raise RuntimeError("Failed to load Gmail OAuth token") from exc
     return build("gmail", "v1", credentials=creds)
